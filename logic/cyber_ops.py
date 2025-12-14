@@ -28,3 +28,8 @@ class CyberOps:
                 raise ValueError(f"Event '{event_key}' already exists. Please use a different key.")
             else:
                 raise
+            
+    def delete_event(self, event_key: str) -> None:
+        with Store(self.db_path) as s:
+            s.exec("DELETE FROM sec_events WHERE event_key=?", (event_key,))
+                

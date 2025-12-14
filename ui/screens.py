@@ -83,6 +83,18 @@ def _security_view(df: pd.DataFrame, ops: CyberOps):
 
         st.write("### Current queue")
         st.dataframe(df, use_container_width=True)
+        
+        st.write("### Delete event")
+        del_key = st.selectbox("Event to delete", df["event_key"].tolist(), key="sec_del_pick")
+        confirm = st.checkbox("I understand this will permanently delete the event.", key="sec_del_confirm")
+        if st.button("Delete event", key="sec_del_btn"):
+            if not confirm:
+                st.warning("Please confirm deletion first.")
+            else:
+                ops.delete_event(del_key)
+                st.success("Deleted.")
+                st.rerun()
+
 
     st.write("### Create new security event")
     with st.form("sec_create", clear_on_submit=True):
@@ -145,6 +157,18 @@ def _it_view(df: pd.DataFrame, desk: ServiceDesk):
 
         st.write("### Requests")
         st.dataframe(df, use_container_width=True)
+        
+        st.write("### Delete request")
+        del_req = st.selectbox("Request to delete", df["req_key"].tolist(), key="req_del_pick")
+        confirm = st.checkbox("I understand this will permanently delete the request.", key="req_del_confirm")
+        if st.button("Delete request", key="req_del_btn"):
+            if not confirm:
+                st.warning("Please confirm deletion first.")
+            else:
+                desk.delete_request(del_req)
+                st.success("Deleted.")
+                st.rerun()
+
 
     st.write("### Log new IT request")
     with st.form("req_create", clear_on_submit=True):
@@ -212,6 +236,18 @@ def _data_view(df: pd.DataFrame, cat: DataCatalog):
 
         st.write("### Registry")
         st.dataframe(df, use_container_width=True)
+        
+        st.write("### Delete asset")
+        del_asset = st.selectbox("Asset to delete", df["asset_name"].tolist(), key="asset_del_pick")
+        confirm = st.checkbox("I understand this will permanently delete the asset.", key="asset_del_confirm")
+        if st.button("Delete asset", key="asset_del_btn"):
+            if not confirm:
+                st.warning("Please confirm deletion first.")
+            else:
+                cat.delete_asset(del_asset)
+                st.success("Deleted.")
+                st.rerun()
+
 
     st.write("### Register new data asset")
     with st.form("asset_create", clear_on_submit=True):

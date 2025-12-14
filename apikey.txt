@@ -1,0 +1,3 @@
+GEMINI_API_KEY=AIzaSyBObV-KwjwJvPol-5OkP-LDA47_NU7MTHI
+DB_PATH=multi_domain_platform.db
+

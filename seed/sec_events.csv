@@ -1,6 +1,6 @@
 event_key,event_kind,impact,state,raised_at,cleared_at,owner,notes
-SEC-901,Phishing,High,Open,2025-11-28,,Mina,Mailbox reports increased suspicious attachments
-SEC-902,Malware,Critical,In Progress,2025-11-29,,Ravi,Endpoint quarantined and under investigation
-SEC-903,Brute Force,Medium,Resolved,2025-11-30,2025-12-01,Noah,IP range blocked after repeated failures
-SEC-904,DDoS,High,Closed,2025-12-02,2025-12-02,Asha,Rate limit and WAF rules applied
-SEC-905,Policy Violation,Low,Open,2025-12-04,,Tariq,Public share link discovered on internal file
+SEC001,Phishing,High,Open,2024-10-01,,Analyst_A,Unresolved phishing email
+SEC002,Phishing,Critical,Open,2024-10-02,,Analyst_B,Credential harvesting attempt
+SEC003,Malware,Medium,Resolved,2024-10-03,2024-10-07,Analyst_C,Ransomware blocked
+SEC004,Phishing,High,In Progress,2024-10-04,,Analyst_A,Suspicious domain
+SEC005,Unauthorized Access,Critical,Resolved,2024-10-05,2024-10-12,Analyst_D,Account takeover

@@ -28,3 +28,7 @@ class DataCatalog:
                 raise ValueError(f"Asset '{asset_name}' already exists. Please use a different name.")
             else:
                 raise
+    def delete_asset(self, asset_name: str) -> None:
+        with Store(self.db_path) as s:
+            s.exec("DELETE FROM data_assets WHERE asset_name=?", (asset_name,))
+        

@@ -28,3 +28,8 @@ class ServiceDesk:
                 raise ValueError(f"Request '{req_key}' already exists. Please use a different key.")
             else:
                 raise
+            
+    def delete_request(self, req_key: str) -> None:
+        with Store(self.db_path) as s:
+            s.exec("DELETE FROM it_requests WHERE req_key=?", (req_key,))
+            

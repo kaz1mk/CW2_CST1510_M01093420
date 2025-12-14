@@ -1,6 +1,6 @@
 asset_name,steward,origin,size_mb,rows_est,created_on
-StudentProfiles,Registry,SIS,132.4,54000,2025-10-10
-LibraryHoldings,Library,ILS,812.8,205000,2025-09-18
-PaymentsLedger,Finance,ERP,2440.2,1500000,2025-08-01
-CourseActivity,IT,LMS,420.1,995000,2025-11-05
-EdgeLogs,Security,SIEM,4985.9,8800000,2025-12-01
+User_Login_Logs,Admin_Team,IT,18944,2500000,2024-09-01
+Email_Threat_Reports,Security_Team,Cyber,22630,1800000,2024-09-10
+Employee_Records,HR_Manager,HR,2457,120000,2024-08-05
+Network_Traffic_Logs,Network_Admin,IT,36557,5000000,2024-10-01
+Archived_Backups,Backup_Admin,IT,56627,8000000,2024-06-15
