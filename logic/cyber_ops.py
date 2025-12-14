@@ -15,10 +15,16 @@ class CyberOps:
             s.exec("UPDATE sec_events SET state=? WHERE event_key=?", (new_state, event_key))
 
     def add_event(self, event_key: str, event_kind: str, impact: str, state: str,
-                  raised_at: str, owner: str, notes: str = "", cleared_at: str | None = None) -> None:
-        with Store(self.db_path) as s:
-            s.exec(
-                """INSERT INTO sec_events(event_key,event_kind,impact,state,raised_at,cleared_at,owner,notes)
-                   VALUES(?,?,?,?,?,?,?,?)""",
-                (event_key, event_kind, impact, state, raised_at, cleared_at, owner, notes),
-            )
+              raised_at: str, owner: str, notes: str = "", cleared_at: str | None = None) -> None:
+        try:
+            with Store(self.db_path) as s:
+                s.exec(
+                    """INSERT INTO sec_events(event_key,event_kind,impact,state,raised_at,cleared_at,owner,notes)
+                    VALUES(?,?,?,?,?,?,?,?)""",
+                    (event_key, event_kind, impact, state, raised_at, cleared_at, owner, notes),
+                )
+        except Exception as e:
+            if "UNIQUE constraint failed" in str(e):
+                raise ValueError(f"Event '{event_key}' already exists. Please use a different key.")
+            else:
+                raise

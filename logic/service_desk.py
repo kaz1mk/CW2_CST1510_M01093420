@@ -15,10 +15,16 @@ class ServiceDesk:
             s.exec("UPDATE it_requests SET phase=? WHERE req_key=?", (phase, req_key))
 
     def add_request(self, req_key: str, topic: str, urgency: str, phase: str,
-                    opened_at: str, assignee: str, closed_at: str | None = None) -> None:
-        with Store(self.db_path) as s:
-            s.exec(
-                """INSERT INTO it_requests(req_key,topic,urgency,phase,opened_at,closed_at,assignee)
-                   VALUES(?,?,?,?,?,?,?)""",
-                (req_key, topic, urgency, phase, opened_at, closed_at, assignee),
-            )
+                opened_at: str, assignee: str, closed_at: str | None = None) -> None:
+        try:
+            with Store(self.db_path) as s:
+                s.exec(
+                    """INSERT INTO it_requests(req_key,topic,urgency,phase,opened_at,closed_at,assignee)
+                    VALUES(?,?,?,?,?,?,?)""",
+                    (req_key, topic, urgency, phase, opened_at, closed_at, assignee),
+                )
+        except Exception as e:
+            if "UNIQUE constraint failed" in str(e):
+                raise ValueError(f"Request '{req_key}' already exists. Please use a different key.")
+            else:
+                raise

@@ -25,7 +25,7 @@ def command_center(db_path: str):
 
     with tabs[2]:
         df = desk.frame()
-        _it_view(df, desk)
+        _it_view(df, desk)   
 
     with tabs[3]:
         st.subheader("Ops Assistant")
@@ -115,6 +115,70 @@ def _security_view(df: pd.DataFrame, ops: CyberOps):
                 st.success("Event added.")
                 st.rerun()
 
+def _it_view(df: pd.DataFrame, desk: ServiceDesk):
+    st.subheader("Service Desk")
+
+    if df.empty:
+        st.info("No IT requests found.")
+    else:
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("Open", int((df["phase"] == "Open").sum()))
+        k2.metric("In Progress", int((df["phase"] == "In Progress").sum()))
+        k3.metric("Resolved", int((df["phase"] == "Resolved").sum()))
+        k4.metric("Total", int(len(df)))
+
+        c1, c2 = st.columns([1.2, 0.8])
+        with c1:
+            fig = px.histogram(df, x="urgency", color="phase", barmode="group")
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            fig2 = px.pie(df, names="topic")
+            st.plotly_chart(fig2, use_container_width=True)
+
+        st.write("### Update phase")
+        req = st.selectbox("Request", df["req_key"].tolist(), key="req_pick")
+        phase = st.selectbox("New phase", ["Open", "In Progress", "Resolved", "Closed"], key="req_phase")
+        if st.button("Apply phase change", key="req_apply"):
+            desk.set_phase(req, phase)
+            st.success("Updated.")
+            st.rerun()
+
+        st.write("### Requests")
+        st.dataframe(df, use_container_width=True)
+
+    st.write("### Log new IT request")
+    with st.form("req_create", clear_on_submit=True):
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            req_key = st.text_input("Request key (unique)", placeholder="REQ-4001")
+            topic = st.text_input("Topic", placeholder="WiFi Coverage")
+        with c2:
+            urgency = st.selectbox("Urgency", ["Low", "Medium", "High", "Critical"])
+            phase = st.selectbox("Phase", ["Open", "In Progress", "Resolved", "Closed"])
+        with c3:
+            opened_at = st.text_input("Opened at (YYYY-MM-DD)", placeholder="2025-12-12")
+            assignee = st.text_input("Assignee", placeholder="DeskA")
+
+        if st.form_submit_button("Add request", type="primary"):
+            if not (req_key.strip() and topic.strip() and opened_at.strip() and assignee.strip()):
+                st.warning("Fill request key, topic, opened date, and assignee.")
+            else:
+                try:
+                    desk.add_request(
+                        req_key=req_key.strip(),
+                        topic=topic.strip(),
+                        urgency=urgency,
+                        phase=phase,
+                        opened_at=opened_at.strip(),
+                        assignee=assignee.strip(),
+                    )
+                    st.success("Request added.")
+                    st.rerun()
+                except ValueError as e:
+                    st.error(str(e))
+                except Exception as e:
+                    st.error(f"Failed to add request: {e}")
+
 
 def _data_view(df: pd.DataFrame, cat: DataCatalog):
     st.subheader("Data Registry")
@@ -166,76 +230,21 @@ def _data_view(df: pd.DataFrame, cat: DataCatalog):
             if not (asset_name.strip() and steward.strip() and origin.strip() and created_on.strip()):
                 st.warning("Fill asset name, steward, origin, and created date.")
             else:
-                cat.add_asset(
-                    asset_name=asset_name.strip(),
-                    steward=steward.strip(),
-                    origin=origin.strip(),
-                    size_mb=float(size_mb),
-                    rows_est=int(rows_est),
-                    created_on=created_on.strip(),
-                )
-                st.success("Asset added.")
-                st.rerun()
-
-
-def _it_view(df: pd.DataFrame, desk: ServiceDesk):
-    st.subheader("Service Desk")
-
-    if df.empty:
-        st.info("No IT requests found.")
-    else:
-        k1, k2, k3, k4 = st.columns(4)
-        k1.metric("Open", int((df["phase"] == "Open").sum()))
-        k2.metric("In Progress", int((df["phase"] == "In Progress").sum()))
-        k3.metric("Resolved", int((df["phase"] == "Resolved").sum()))
-        k4.metric("Total", int(len(df)))
-
-        c1, c2 = st.columns([1.2, 0.8])
-        with c1:
-            fig = px.histogram(df, x="urgency", color="phase", barmode="group")
-            st.plotly_chart(fig, width="stretch")
-        with c2:
-            fig2 = px.pie(df, names="topic")
-            st.plotly_chart(fig2, width="stretch")
-
-        st.write("### Update phase")
-        req = st.selectbox("Request", df["req_key"].tolist(), key="req_pick")
-        phase = st.selectbox("New phase", ["Open", "In Progress", "Resolved", "Closed"], key="req_phase")
-        if st.button("Apply phase change", key="req_apply"):
-            desk.set_phase(req, phase)
-            st.success("Updated.")
-            st.rerun()
-
-        st.write("### Requests")
-        st.dataframe(df, use_container_width=True)
-
-    st.write("### Log new IT request")
-    with st.form("req_create", clear_on_submit=True):
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            req_key = st.text_input("Request key (unique)", placeholder="REQ-4001")
-            topic = st.text_input("Topic", placeholder="WiFi Coverage")
-        with c2:
-            urgency = st.selectbox("Urgency", ["Low", "Medium", "High", "Critical"])
-            phase = st.selectbox("Phase", ["Open", "In Progress", "Resolved", "Closed"])
-        with c3:
-            opened_at = st.text_input("Opened at (YYYY-MM-DD)", placeholder="2025-12-12")
-            assignee = st.text_input("Assignee", placeholder="DeskA")
-
-        if st.form_submit_button("Add request", type="primary"):
-            if not (req_key.strip() and topic.strip() and opened_at.strip() and assignee.strip()):
-                st.warning("Fill request key, topic, opened date, and assignee.")
-            else:
-                desk.add_request(
-                    req_key=req_key.strip(),
-                    topic=topic.strip(),
-                    urgency=urgency,
-                    phase=phase,
-                    opened_at=opened_at.strip(),
-                    assignee=assignee.strip(),
-                )
-                st.success("Request added.")
-                st.rerun()
+                try:
+                    cat.add_asset(
+                        asset_name=asset_name.strip(),
+                        steward=steward.strip(),
+                        origin=origin.strip(),
+                        size_mb=float(size_mb),
+                        rows_est=int(rows_est),
+                        created_on=created_on.strip(),
+                    )
+                    st.success("Asset added.")
+                    st.rerun()
+                except ValueError as e:
+                    st.error(str(e))
+                except Exception as e:
+                    st.error(f"Failed to add asset: {e}")
 
 
 def _df_to_context(title: str, df: pd.DataFrame) -> str:

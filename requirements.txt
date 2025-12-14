@@ -1,6 +1,20 @@
-streamlit
-pandas
-plotly
-bcrypt
-python-dotenv
-requests
+# Web Framework
+streamlit>=1.28.0
+
+# Data Processing & Analysis
+pandas>=2.0.0
+
+# Data Visualization
+plotly>=5.14.0
+
+# Security & Authentication
+bcrypt>=4.0.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# AI Integration - Google Gemini
+google-generativeai>=0.3.0

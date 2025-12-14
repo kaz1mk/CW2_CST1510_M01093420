@@ -16,9 +16,15 @@ class DataCatalog:
 
     def add_asset(self, asset_name: str, steward: str, origin: str,
                   size_mb: float, rows_est: int, created_on: str) -> None:
-        with Store(self.db_path) as s:
-            s.exec(
-                """INSERT INTO data_assets(asset_name,steward,origin,size_mb,rows_est,created_on)
-                   VALUES(?,?,?,?,?,?)""",
-                (asset_name, steward, origin, float(size_mb), int(rows_est), created_on),
-            )
+        try:
+            with Store(self.db_path) as s:
+                s.exec(
+                    """INSERT INTO data_assets(asset_name,steward,origin,size_mb,rows_est,created_on)
+                       VALUES(?,?,?,?,?,?)""",
+                    (asset_name, steward, origin, float(size_mb), int(rows_est), created_on),
+                )
+        except Exception as e:
+            if "UNIQUE constraint failed" in str(e):
+                raise ValueError(f"Asset '{asset_name}' already exists. Please use a different name.")
+            else:
+                raise
